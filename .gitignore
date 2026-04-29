@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Pipenv
+# Baris ini di-comment karena Pipfile & Pipfile.lock HARUS di-commit
+# Namun, jika kamu punya file temporary dari pipenv, masukkan di sini
+#.pipenv
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Linter (Ruff/Flake8)
+.ruff_cache/
+.mypy_cache/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
