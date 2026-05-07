@@ -1,7 +1,8 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging import setup_logging
-from app.routes import opening_part
+from app.routes import opening_part, pole
 
 # setup logging saat app start
 setup_logging()
@@ -12,8 +13,18 @@ app = FastAPI(
     description="API Gateway"
 )
 
+# CORS 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # bisa diganti url agar lebih spesifik
+    allow_credentials=False,  # harus False kalau allow_origins="*"
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # register router
 app.include_router(opening_part.router)
+app.include_router(pole.router)
 
 
 # health check
