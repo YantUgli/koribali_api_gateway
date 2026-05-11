@@ -1,0 +1,8 @@
+{
+  "default_success_message": "Calculation completed successfully",
+  "unique_codes": {
+    "1": "Hasil calculation sempurna",
+    "2": "Hasil calculation rawan",
+    "3": "Hasil calculation kritis"
+  }
+}

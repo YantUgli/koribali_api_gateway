@@ -1,15 +1,15 @@
 import httpx
 from pydantic import BaseModel
 from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.security import get_internal_service_headers
 from loguru import logger
 from typing import Optional
 from app.schemas.opening_part import OpeningPartResponse, OpeningPartResponseStatus
+from app.utils.message_response import get_message_by_unique_code 
 
-DEFAULT_SUCCESS_MESSAGE = "Calculation completed successfully"
-
-async def forward(path: str, payload: BaseModel, status:Optional[str]= None) -> dict:
+async def forward(path: str, payload: BaseModel) -> dict:
     url = f"{settings.calc_service_url}{path}"
     print(url)
     logger.info(f"Forwarding to {url}")
@@ -27,21 +27,7 @@ async def forward(path: str, payload: BaseModel, status:Optional[str]= None) -> 
             # print(status == "status", result)
 
             unique_code = result.get("unique_code")
-            success_message = DEFAULT_SUCCESS_MESSAGE
-
-            if unique_code == 1:
-                success_message = "Hasil calculation sempurna"
-            elif unique_code == 2:
-                success_message = "Hasil calculation rawan"
-
-            print(success_message)
-            
-            if status == "status":
-                return OpeningPartResponseStatus(
-                status = result.get("status", "success"),
-                message = result.get("message", success_message),
-                data = result.get("data")
-            )
+            success_message = get_message_by_unique_code(unique_code)
 
             return OpeningPartResponse(
                 success = result.get("success", True),
@@ -52,10 +38,24 @@ async def forward(path: str, payload: BaseModel, status:Optional[str]= None) -> 
 
     except httpx.HTTPStatusError as e:
         logger.error(f"Calculation service error: {e.response.status_code}")
-        raise HTTPException(
-            status_code=e.response.status_code,
-            detail="Error from calculation service"
+        try:
+            flask_response = e.response.json()
+        except Exception:
+            flask_response = {"detail": e.response.text}
+
+        # Menggunakan HTTPExeption dari FastAPI, akan masuk kedalam detail
+        # raise HTTPException(
+        #     status_code=e.response.status_code,
+        #     detail=flask_response  # teruskan langsung, jangan replace
+        # )
+
+        # Cukup menggunakan JSONResponse
+        return JSONResponse(
+            status_code=response.status_code,
+            content=flask_response
         )
+
+
     except httpx.RequestError as e:
         logger.error(f"Cannot reach calculation service: {e}")
         raise HTTPException(
