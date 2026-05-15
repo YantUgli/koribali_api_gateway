@@ -2,26 +2,41 @@ import httpx
 from pydantic import BaseModel
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
+from typing import Optional, Any, Union
+from loguru import logger
+
 from app.core.config import settings
 from app.core.security import get_internal_service_headers
-from loguru import logger
-from typing import Optional
 from app.schemas.opening_part import OpeningPartResponse, OpeningPartResponseStatus
 from app.utils.message_response import get_message_by_unique_code 
 
-async def forward(path: str, payload: BaseModel) -> dict:
+# Generic Class untuk menampung respoonse dari forwarder
+class ForwarderResult(BaseModel):
+    data: Any
+    message: str | None = None
+    success: bool
+
+async def forward(path: str, payload: Union[BaseModel, dict]) -> ForwarderResult:
     url = f"{settings.calc_service_url}{path}"
-    print(url)
+    # print(url)
     logger.info(f"Forwarding to {url}")
+    # print(payload.model_dump(), flush=True)
+
+   # Handle both Pydantic model dan plain dict
+    if isinstance(payload, BaseModel):
+        json_payload = payload.model_dump()   # snake_case
+    else:
+        json_payload = payload                # sudah dict, langsung pakai
 
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 url,
-                json=payload.model_dump(),
+                json=json_payload,            # ← pakai json_payload
                 headers=get_internal_service_headers(),
                 timeout=30.0
             )
+
             response.raise_for_status()
             result = response.json()
             # print(status == "status", result)
@@ -29,7 +44,7 @@ async def forward(path: str, payload: BaseModel) -> dict:
             unique_code = result.get("unique_code")
             success_message = get_message_by_unique_code(unique_code)
 
-            return OpeningPartResponse(
+            return ForwarderResult(
                 success = result.get("success", True),
                 message = success_message,
                 data = result.get("data"),
@@ -44,16 +59,17 @@ async def forward(path: str, payload: BaseModel) -> dict:
             flask_response = {"detail": e.response.text}
 
         # Menggunakan HTTPExeption dari FastAPI, akan masuk kedalam detail
-        # raise HTTPException(
-        #     status_code=e.response.status_code,
-        #     detail=flask_response  # teruskan langsung, jangan replace
-        # )
+        # print(e.response)
+        raise HTTPException(
+            status_code=e.response.status_code,
+            detail=flask_response  # teruskan langsung, jangan replace
+        )
 
         # Cukup menggunakan JSONResponse
-        return JSONResponse(
-            status_code=response.status_code,
-            content=flask_response
-        )
+        # return JSONResponse(
+        #     status_code= e.response.status_code,
+        #     content=flask_response
+        # )
 
 
     except httpx.RequestError as e:

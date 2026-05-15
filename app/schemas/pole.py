@@ -1,26 +1,29 @@
-from pydantic import BaseModel, Field
 from typing import List
+from app.utils.base_schema import CamelBaseModel
 
-class PoleInput(BaseModel):
-    diameter_pole : float = Field(alias="diameterPole")
-    height_pole : float = Field(alias="heightPole")
-    lowest_height_pole : float = Field(alias="lowestHeightPole")
-    thickness_pole : float = Field(alias="thicknessPole")
-    material_pole : str = Field(alias="materialPole")
+# Inherit dari CamelBaseModel
+class PoleInput(CamelBaseModel):
+    diameter_pole: float
+    height_pole: float
+    lowest_height_pole: float
+    thickness_pole: float
+    material_pole: str
 
-class DoObject(BaseModel):
-    area_front_do : float = Field(alias="areaFrontDo")
-    area_side_do : float = Field(alias="areaSideDo")
-    cf_do : float = Field(alias="cfDo")
-    height_do : float = Field(alias="heightDo")
-    weight_do : float = Field(alias="weightDo")
-    name_do : str = Field(alias="nameDo")
 
-# kedua Model
-class CalculationRequest(BaseModel):
-    pole : PoleInput
-    objects : List[DoObject]
+class DoObject(CamelBaseModel):
+    area_front_do: float
+    area_side_do: float
+    cf_do: float
+    height_do: float
+    weight_do: float
+    name_do: str
 
-class CalculationResponse(BaseModel):
-    message:str
-    input : CalculationRequest
+
+class CalculationRequest(CamelBaseModel):
+    pole: PoleInput
+    objects: List[DoObject]
+
+
+class CalculationResponse(CamelBaseModel):
+    message: str
+    input: CalculationRequest
