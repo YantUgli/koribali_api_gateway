@@ -1,17 +1,37 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.routes import opening_part, pole, load_object
 
+# Database Needs
+from app.core.staging_database import engine, Base
+from app.models.staging import StagingData
+
 # setup logging saat app start
 setup_logging()
+
+# Staging Database
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Dijalankan saat startup
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
+    yield # Aplikasi berjalan
+    
+    # Jika ada logika shutdown, letakkan di sini
+    await engine.dispose()
 
 app = FastAPI(
     title=settings.app_name,
     version="0.1.0",
-    description="API Gateway"
+    description="API Gateway",
+    lifespan= lifespan
 )
+
 
 # CORS 
 app.add_middleware(

@@ -10,6 +10,9 @@ httpx = "*"
 loguru = "*"
 slowapi = "*"
 fastapi = {extras = ["standard"], version = "*"}
+sqlalchemy = "*"
+aiosqlite = "*"
+greenlet = "*"
 
 [dev-packages]
 pytest = "*"

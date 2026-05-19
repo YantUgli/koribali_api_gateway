@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     calc_service_url: str
     calc_service_key: str
 
+    DATABASE_URL: str
+
     class Config:
         env_file = ".env"
 

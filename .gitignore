@@ -5,6 +5,7 @@ __pycache__/
 
 # Environments
 .env
+.env.*
 .venv
 env/
 venv/
@@ -42,6 +43,7 @@ coverage.xml
 # OS metadata
 .DS_Store
 Thumbs.db
+*.db
 
 # IDEs
 .vscode/
