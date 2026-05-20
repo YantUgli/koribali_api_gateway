@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.load_object import LoadObjectRequest
 from app.services.calculation import forward
 from app.utils.response import success_response
-from app.services.staging_service import save_to_staging
+# from app.services.staging_service import save_to_staging
 from app.core.staging_database import get_db
 from app.utils.sql_staging.orchestrator import Orchestrator
 
@@ -19,7 +19,7 @@ async def calculate_pole(payload: LoadObjectRequest, db:AsyncSession = Depends(g
         db=db
     )
 
-    print("this is payload: ", payload.session_id)
+    print("this is payload: ", payload)
 
 
     return success_response(

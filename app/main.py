@@ -8,7 +8,7 @@ from app.routes import opening_part, pole, load_object
 
 # Database Needs
 from app.core.staging_database import engine, Base
-from app.models.staging import StagingData
+from app.models.staging import StagingProject
 
 # setup logging saat app start
 setup_logging()
