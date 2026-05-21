@@ -1,12 +1,14 @@
 from app.utils.base_schema import CamelBaseModel
 from typing import List, Dict, Optional
+from app.models.staging import MaterialType
+from datetime import date
 
 
 class PoleSchema(CamelBaseModel):
     name: str
     diameter: float
     thickness: float
-    material: str
+    material: MaterialType
     z_height: float
 
 
@@ -36,3 +38,54 @@ class LoadObjectRequest(CamelBaseModel):
     high_evaluation: Dict[str, float]
     direct_objects: Optional[List[DirectObjectSchema]] = []
     session_id: Optional[str] = None
+
+
+# RESULT SCHEMA CALCULATE
+class ObjectResultSchema(CamelBaseModel):
+    name: str
+    windload: float
+    moment: float
+
+class LoadObjectResultData(CamelBaseModel):
+    session_id: str
+    status: str # ok, ng
+    total_moment: float
+    total_windload: float
+    objects: List[ObjectResultSchema]
+
+class LoadObjectResponse(CamelBaseModel):
+    status: str 
+    message: Optional[str] = None
+    data: LoadObjectResultData
+
+# RESULT SCHEMA GET Data
+
+# tidak pelu di declare setiap object karena terlalu complex nanti
+# class EvaluationObjectSchema(CamelBaseModel):
+#     name: str
+#     moment: float
+#     windload: float
+
+class HighEvalDetailSchema(CamelBaseModel):
+    status: str
+    total_moment: float 
+    total_windload: float
+    z_ref: float 
+    objects: list
+
+
+class ConditionSchema(CamelBaseModel):
+    design_standard: str
+    wind_speed: float
+    air_density: float
+
+class DatabaseProjectSchema(CamelBaseModel):
+    title: str
+    report_number: str
+    date: date
+    project_type: str
+
+class StagingDataResponseSchema(CamelBaseModel):
+    project: DatabaseProjectSchema
+    condition: ConditionSchema
+    high_evaluations: Dict[str, HighEvalDetailSchema] 

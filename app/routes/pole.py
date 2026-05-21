@@ -9,7 +9,6 @@ router = APIRouter(prefix="/api/pole", tags=["Pole Calculation"])
 async def calculate_pole(payload: CalculationRequest):
     # Forward to Calculation after turn to snake_case format
     result = await forward("/api/pole/calculate", payload )
-    print("data", result.data)
     return success_response(
         data=result.data,
         message=result.message,
