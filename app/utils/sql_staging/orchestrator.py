@@ -26,6 +26,7 @@ def map_pole_result(p):
         "thickness": pole.thickness if pole else None,
         "material": pole.material if pole else None,
         "Height": pole.height if pole else None,
+        "Quanity": pole.quantity if pole else None,
     }
 
 
@@ -43,6 +44,7 @@ def map_direct_object_result(d):
         "side_area": obj.side_area if obj else None,
         "coefficient": obj.coefficient if obj else None,
         "weight": obj.weight if obj else None,
+        "Quanity": obj.quantity if obj else None,
     }
 
 
