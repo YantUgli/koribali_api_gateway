@@ -25,8 +25,8 @@ def map_pole_result(p):
         "diameter": pole.diameter if pole else None,
         "thickness": pole.thickness if pole else None,
         "material": pole.material if pole else None,
-        "Height": pole.height if pole else None,
-        "Quanity": pole.quantity if pole else None,
+        "height": pole.height if pole else None,
+        "quantity": pole.quantity if pole else None,
     }
 
 
@@ -44,7 +44,7 @@ def map_direct_object_result(d):
         "side_area": obj.side_area if obj else None,
         "coefficient": obj.coefficient if obj else None,
         "weight": obj.weight if obj else None,
-        "Quanity": obj.quantity if obj else None,
+        "quantity": obj.quantity if obj else None,
     }
 
 
@@ -107,7 +107,8 @@ class Orchestrator:
         if not project:
             return None
         
-        high_eval_dict = {}
+        # high_eval_dict = {}
+        high_eval_list = []
         
         for h in project.high_evals:
             # Akses calculation result
@@ -129,13 +130,22 @@ class Orchestrator:
                     for p in calc.direct_object_results
                 )
 
-            high_eval_dict[h.name] = {
+            high_eval_list.append({
+                "name": h.name,
                 "status": calc.status if calc else "N/A",
                 "totalMoment": calc.total_moment if calc else 0.0,
                 "totalWindload": calc.total_windload if calc else 0.0,
                 "zRef": h.point_evaluate, 
                 "objects": objects
-            }
+            })
+
+            # high_eval_dict[h.name] = {
+            #     "status": calc.status if calc else "N/A",
+            #     "totalMoment": calc.total_moment if calc else 0.0,
+            #     "totalWindload": calc.total_windload if calc else 0.0,
+            #     "zRef": h.point_evaluate, 
+            #     "objects": objects
+            # }
         
         response_data = StagingDataResponseSchema(
             project={
@@ -149,7 +159,7 @@ class Orchestrator:
                 "wind_speed": project.condition.wind_speed,
                 "air_density": project.condition.air_density
             },
-            high_evaluations=high_eval_dict
+            high_evaluations=high_eval_list
         )
 
         return response_data.model_dump(mode="json")

@@ -88,4 +88,5 @@ class DatabaseProjectSchema(CamelBaseModel):
 class StagingDataResponseSchema(CamelBaseModel):
     project: DatabaseProjectSchema
     condition: ConditionSchema
-    high_evaluations: Dict[str, HighEvalDetailSchema] 
+    # high_evaluations: Dict[str, HighEvalDetailSchema] 
+    high_evaluations: list
