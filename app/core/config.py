@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     calc_service_key: str
 
     DATABASE_URL: str
+    DEBUG: str
 
     class Config:
         env_file = ".env"

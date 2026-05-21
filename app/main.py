@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from datetime import datetime, timezone
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
@@ -20,14 +22,13 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     
-    yield # Aplikasi berjalan
+    yield 
     
-    # Jika ada logika shutdown, letakkan di sini
     await engine.dispose()
 
 app = FastAPI(
     title=settings.app_name,
-    version="0.1.0",
+    version="1.0.0",
     description="API Gateway",
     lifespan= lifespan
 )
@@ -48,7 +49,32 @@ app.include_router(pole.router)
 app.include_router(load_object.router)
 
 
-# health check
+""" Entry Point Start """
+@app.get("/")
+async def api_info():
+    return {
+        "name": "Kori Bali API Gateway",
+        "server_time": datetime.now(timezone.utc).isoformat(),
+        "status": "online",
+        "docs_url": "/docs",
+        "redoc_url": "/redoc",
+        "version": app.version,
+    }
+
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": settings.app_name}
+    return {
+        "status": "healthy",
+        "uptime": "running"
+    }
+
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc):
+    return JSONResponse(
+        status_code=404,
+        content={
+            "error": "Route not found",
+            "path": request.url.path
+        }
+    )
+""" Entry Point End """

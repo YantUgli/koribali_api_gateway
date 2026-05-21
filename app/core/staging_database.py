@@ -8,19 +8,12 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.core.config import settings
 
-# print("="*50)
-# print(f"DATABASE URL YANG TERBACA: ->{DATABASE_URL}<-")
-# print("="*50)
-
-
 # DATABASE_URL = "sqlite+aiosqlite:///./gateway.db"
-
-
 
 # Async Engine
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=True
+    echo=False
 )
 
 @event.listens_for(engine.sync_engine, "connect")
